@@ -462,10 +462,12 @@ int git_apply_tree(
 	git_index **out,
 	git_repository *repo,
 	git_tree *preimage,
-	git_diff *diff)
+	git_diff *diff,
+	git_apply_options *given_opts)
 {
 	git_index *postimage = NULL;
 	git_reader *pre_reader = NULL;
+	git_apply_options opts = GIT_APPLY_OPTIONS_INIT;
 	const git_diff_delta *delta;
 	size_t i;
 	int error = 0;
@@ -473,6 +475,9 @@ int git_apply_tree(
 	assert(out && repo && preimage && diff);
 
 	*out = NULL;
+
+	if (given_opts)
+		memcpy(&opts, given_opts, sizeof(git_apply_options));
 
 	if ((error = git_reader_for_tree(&pre_reader, preimage)) < 0)
 		goto done;
@@ -518,6 +523,7 @@ static int git_apply__to_workdir(
     git_diff *diff,
     git_index *preimage,
     git_index *postimage,
+	git_apply_location_t location,
     git_apply_options *opts)
 {
 	git_vector paths = GIT_VECTOR_INIT;
@@ -525,6 +531,8 @@ static int git_apply__to_workdir(
 	const git_diff_delta *delta;
 	size_t i;
 	int error;
+
+	GIT_UNUSED(opts);
 
 	/*
 	 * Limit checkout to the paths affected by the diff; this ensures
@@ -548,7 +556,7 @@ static int git_apply__to_workdir(
 	checkout_opts.checkout_strategy |= GIT_CHECKOUT_DISABLE_PATHSPEC_MATCH;
 	checkout_opts.checkout_strategy |= GIT_CHECKOUT_DONT_WRITE_INDEX;
 
-	if (opts->location == GIT_APPLY_LOCATION_WORKDIR)
+	if (location == GIT_APPLY_LOCATION_WORKDIR)
 		checkout_opts.checkout_strategy |= GIT_CHECKOUT_DONT_UPDATE_INDEX;
 
 	checkout_opts.paths.strings = (char **)paths.contents;
@@ -625,6 +633,7 @@ done:
 int git_apply(
 	git_repository *repo,
 	git_diff *diff,
+	git_apply_location_t location,
 	git_apply_options *given_opts)
 {
 	git_indexwriter indexwriter = GIT_INDEXWRITER_INIT;
@@ -647,9 +656,9 @@ int git_apply(
 	 * in `--cached` or `--index` mode, we apply to the contents already
 	 * in the index.
 	 */
-	if (opts.location == GIT_APPLY_LOCATION_BOTH)
+	if (location == GIT_APPLY_LOCATION_BOTH)
 		error = git_reader_for_workdir(&pre_reader, repo, true);
-	else if (opts.location == GIT_APPLY_LOCATION_INDEX)
+	else if (location == GIT_APPLY_LOCATION_INDEX)
 		error = git_reader_for_index(&pre_reader, repo, NULL);
 	else
 		error = git_reader_for_workdir(&pre_reader, repo, false);
@@ -677,10 +686,10 @@ int git_apply(
 			goto done;
 	}
 
-	if (opts.location == GIT_APPLY_LOCATION_INDEX)
+	if (location == GIT_APPLY_LOCATION_INDEX)
 		error = git_apply__to_index(repo, diff, preimage, postimage, &opts);
 	else
-		error = git_apply__to_workdir(repo, diff, preimage, postimage, &opts);
+		error = git_apply__to_workdir(repo, diff, preimage, postimage, location, &opts);
 
 	if (error < 0)
 		goto done;
