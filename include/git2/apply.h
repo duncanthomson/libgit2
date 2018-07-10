@@ -21,8 +21,27 @@
  */
 GIT_BEGIN_DECL
 
+/*
+ * When applying a patch, callback that will be made per delta (file).
+ *
+ * When the callback:
+ * - returns < 0, the apply process will be aborted.
+ * - returns > 0, the delta will not be applied, but the apply process
+ *      continues
+ * - returns 0, the delta is applied, and the apply process continues.
+ *
+ * @param delta The delta to be applied
+ * @param payload User-specified payload
+ */
+typedef int (*git_apply_delta_cb)(
+	const git_diff_delta *delta,
+	void *payload);
+
 typedef struct {
 	unsigned int version;
+
+	git_apply_delta_cb delta_cb;
+	void *payload;
 } git_apply_options;
 
 #define GIT_APPLY_OPTIONS_VERSION 1
