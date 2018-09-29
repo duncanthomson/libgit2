@@ -34,9 +34,9 @@ static int tree_reader_read(
 	int error;
 
 	if ((error = git_tree_entry_bypath(&tree_entry,
-		reader->tree, filename)) < 0 ||
-		(error = git_blob_lookup(&blob,
-		git_tree_owner(reader->tree), git_tree_entry_id(tree_entry))) < 0)
+	    reader->tree, filename)) < 0 ||
+	    (error = git_blob_lookup(&blob,
+	    git_tree_owner(reader->tree), git_tree_entry_id(tree_entry))) < 0)
 		goto done;
 
 	git_buf_clear(out);
