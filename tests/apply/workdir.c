@@ -309,7 +309,6 @@ void test_apply_workdir__apply_many_changes_one(void)
 {
 	git_diff *diff;
 	git_apply_options opts = GIT_APPLY_OPTIONS_INIT;
-	int skip = 1;
 
 	struct merge_index_entry workdir_expected[] = {
 		{ 0100644, "f51658077d85f2264fa179b4d0848268cb3475c3", 0, "asparagus.txt" },
@@ -336,7 +335,6 @@ void test_apply_workdir__apply_many_changes_two(void)
 {
 	git_diff *diff;
 	git_apply_options opts = GIT_APPLY_OPTIONS_INIT;
-	int skip = 1;
 
 	struct merge_index_entry workdir_expected[] = {
 		{ 0100644, "f51658077d85f2264fa179b4d0848268cb3475c3", 0, "asparagus.txt" },
