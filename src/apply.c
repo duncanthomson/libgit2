@@ -475,7 +475,7 @@ int git_apply_tree(
 	git_repository *repo,
 	git_tree *preimage,
 	git_diff *diff,
-	git_apply_options *given_opts)
+	const git_apply_options *given_opts)
 {
 	git_index *postimage = NULL;
 	git_reader *pre_reader = NULL;
@@ -646,7 +646,7 @@ int git_apply(
 	git_repository *repo,
 	git_diff *diff,
 	git_apply_location_t location,
-	git_apply_options *given_opts)
+	const git_apply_options *given_opts)
 {
 	git_indexwriter indexwriter = GIT_INDEXWRITER_INIT;
 	git_index *index = NULL, *preimage = NULL, *postimage = NULL;
