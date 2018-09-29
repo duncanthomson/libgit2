@@ -19,9 +19,6 @@ struct git_reader {
 	void (*free)(git_reader *reader);
 };
 
-extern int git_reader_for_nothing(
-	git_reader **out);
-
 extern int git_reader_for_tree(
 	git_reader **out,
 	git_tree *tree);
