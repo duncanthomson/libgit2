@@ -39,8 +39,7 @@ static int tree_reader_read(
 	    git_tree_owner(reader->tree), git_tree_entry_id(tree_entry))) < 0)
 		goto done;
 
-	git_buf_clear(out);
-	git_buf_put(out, git_blob_rawcontent(blob), git_blob_rawsize(blob));
+	git_buf_set(out, git_blob_rawcontent(blob), git_blob_rawsize(blob));
 
 	if (git_buf_oom(out))
 		error = -1;
