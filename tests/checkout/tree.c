@@ -30,6 +30,8 @@ void test_checkout_tree__initialize(void)
 
 void test_checkout_tree__cleanup(void)
 {
+	cl_git_pass(git_libgit2_opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, 1));
+
 	git_object_free(g_object);
 	g_object = NULL;
 
@@ -742,7 +744,10 @@ void test_checkout_tree__can_checkout_with_last_workdir_item_missing(void)
 	cl_git_pass(git_index_add_bypath(index, "this-is-dir/contained_file"));
 	cl_git_pass(git_index_write(index));
 
+	cl_git_pass(git_libgit2_opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, 0));
 	cl_git_pass(git_index_write_tree(&tree_id, index));
+	cl_git_pass(git_libgit2_opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, 1));
+
 	cl_git_pass(git_tree_lookup(&tree, g_repo, &tree_id));
 
 	cl_git_pass(p_unlink("./testrepo/this-is-dir/contained_file"));
@@ -1229,7 +1234,9 @@ void test_checkout_tree__case_changing_rename(void)
 
 	cl_git_pass(git_index_write(index));
 
+	cl_git_pass(git_libgit2_opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, 0));
 	cl_git_pass(git_index_write_tree(&tree_id, index));
+	cl_git_pass(git_libgit2_opts(GIT_OPT_ENABLE_STRICT_OBJECT_CREATION, 1));
 	cl_git_pass(git_tree_lookup(&tree, g_repo, &tree_id));
 
 	cl_git_pass(git_signature_new(&signature, "Renamer", "rename@contoso.com", time(NULL), 0));
